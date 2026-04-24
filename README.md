@@ -50,7 +50,7 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Pheem49/CloudDash-TUI-for-Cloudflare.git
    cd TUI
    ```
 
