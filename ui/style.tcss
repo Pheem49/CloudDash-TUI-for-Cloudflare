@@ -127,3 +127,10 @@ TabPane > Static {
 #query-actions Button {
     margin-right: 2;
 }
+
+.search-box {
+    display: none;
+    border: double #f38020;
+    margin-bottom: 1;
+    background: $surface-lighten-1;
+}

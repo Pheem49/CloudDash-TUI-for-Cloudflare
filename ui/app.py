@@ -16,6 +16,11 @@ class CloudDashApp(App):
     BINDINGS = [
         ("d", "toggle_dark", "Toggle dark mode"),
         ("q", "quit", "Quit"),
+        ("j", "cursor_down", "Down"),
+        ("k", "cursor_up", "Up"),
+        ("g", "scroll_top", "Top"),
+        ("G", "scroll_bottom", "Bottom"),
+        ("/", "toggle_search", "Search"),
     ]
 
     def __init__(self, **kwargs):
