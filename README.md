@@ -90,11 +90,8 @@ python main.py
 | `Tab` | Switch between Dashboard / D1 / R2 / Settings |
 | `q` / `Ctrl+C` | Quit Application |
 | `d` | Toggle Dark/Light Mode |
-| `j` / `k` | **Vim Navigation:** Move selection Down / Up |
-| `/` | **Search:** Open/Close real-time filter box |
-| `g` / `G` | **Jump:** Go to Top / Bottom of list |
 | `Enter` | Select Database/Table, Run Query, or Load More |
-| `Up/Down` | Standard Arrow Navigation |
+| `Up/Down` | Navigate through lists and tables |
 
 ---
 
