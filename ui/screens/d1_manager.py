@@ -15,12 +15,12 @@ class D1ManagerScreen(Static):
     ]
 
     def action_cursor_down(self) -> None:
-        if self.focused:
-            self.focused.post_message(ListView.CursorDown() if isinstance(self.focused, ListView) else DataTable.CursorDown())
+        if self.focused and hasattr(self.focused, "action_cursor_down"):
+            self.focused.action_cursor_down()
 
     def action_cursor_up(self) -> None:
-        if self.focused:
-            self.focused.post_message(ListView.CursorUp() if isinstance(self.focused, ListView) else DataTable.CursorUp())
+        if self.focused and hasattr(self.focused, "action_cursor_up"):
+            self.focused.action_cursor_up()
 
     def action_scroll_top(self) -> None:
         if isinstance(self.focused, (ListView, DataTable)):
