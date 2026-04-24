@@ -83,17 +83,6 @@ python main.py
 
 ---
 
-## ⌨️ Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| `Tab` | Switch between Dashboard / D1 / R2 / Settings |
-| `q` / `Ctrl+C` | Quit Application |
-| `d` | Toggle Dark/Light Mode |
-| `Enter` | Select Database/Table, Run Query, or Load More |
-| `Up/Down` | Navigate through lists and tables |
-
----
 
 ## 🛠️ Tech Stack
 - **Framework:** [Textual](https://textual.textualize.io/) (Python TUI Framework)
