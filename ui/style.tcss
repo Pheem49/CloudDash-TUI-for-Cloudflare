@@ -1,0 +1,129 @@
+Header {
+    background: #f38020;
+    color: white;
+    text-style: bold;
+}
+
+Footer {
+    background: #2a2a2a;
+    color: #f38020;
+}
+
+TabbedContent {
+    background: $surface;
+}
+
+TabPane {
+    padding: 1 2;
+}
+
+.section-title {
+    width: 100%;
+    content-align: center middle;
+    text-style: bold;
+    color: #f38020;
+    margin: 1 0;
+    border-bottom: double #f38020;
+}
+
+.welcome-text {
+    width: 100%;
+    content-align: center middle;
+    text-style: italic;
+    color: $primary;
+    margin-top: 2;
+}
+
+.monitor-placeholder {
+    height: 10;
+    border: round $accent;
+    margin: 2 4;
+    content-align: center middle;
+    background: $surface-lighten-1;
+}
+
+/* Tab button styling */
+Tabs > Tab {
+    color: $text-muted;
+}
+
+Tabs > Tab.-active {
+    color: #f38020;
+    text-style: bold;
+}
+
+TabPane > Static {
+    margin-bottom: 1;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 30;
+    background: $surface-darken-1;
+    border-right: solid $primary;
+    padding: 1;
+}
+
+#d1-main-content {
+    padding: 1;
+}
+
+.sub-title {
+    color: $text-muted;
+    text-style: italic;
+    margin-bottom: 1;
+}
+
+/* Explorer Styling */
+.explorer-pane {
+    width: 50%;
+    border: tall $primary-darken-2;
+    margin: 0 1;
+}
+
+#explorer-help {
+    color: $accent;
+    content-align: center middle;
+    margin-top: 1;
+}
+
+/* Dashboard Stats */
+#stats-summary {
+    height: 5;
+    margin-top: 1;
+}
+
+.stat-box {
+    width: 1fr;
+    height: 3;
+    border: round $primary;
+    content-align: center middle;
+    margin: 0 1;
+    background: $surface-lighten-1;
+    color: $text;
+}
+
+#query-history-table {
+    height: 1fr;
+    border: solid $surface-lighten-2;
+}
+
+#results-table {
+    height: 1fr;
+    border: solid $surface-lighten-2;
+    display: none;
+}
+
+#sql-input {
+    margin: 1 0;
+    border: tall $accent;
+}
+
+#query-actions {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#query-actions Button {
+    margin-right: 2;
+}
