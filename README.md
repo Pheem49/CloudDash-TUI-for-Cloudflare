@@ -51,7 +51,7 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/Pheem49/CloudDash-TUI-for-Cloudflare.git
-   cd TUI
+   cd CloudDash-TUI-for-Cloudflare
    ```
 
 2. **Set up Virtual Environment:**
