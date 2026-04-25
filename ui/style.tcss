@@ -127,3 +127,29 @@ TabPane > Static {
 #query-actions Button {
     margin-right: 2;
 }
+
+/* Cost Estimator Styling */
+#cost-estimator {
+    width: 100%;
+    height: 3;
+    padding: 0 1;
+    margin-bottom: 1;
+    border: round $surface-lighten-2;
+    content-align: center middle;
+    background: $surface-lighten-1;
+}
+
+.cost-safe {
+    color: #4caf50; /* Green */
+    text-style: bold;
+}
+
+.cost-warning {
+    color: #ffc107; /* Amber */
+    text-style: bold;
+}
+
+.cost-danger {
+    color: #f44336; /* Red */
+    text-style: bold reverse;
+}

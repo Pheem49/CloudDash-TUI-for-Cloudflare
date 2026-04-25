@@ -34,13 +34,14 @@ class CloudDashApp(App):
         else:
             self.notify("Configuration Error: API keys missing in .env", severity="error", timeout=10)
 
-    def record_query(self, sql: str, rows_read: int, success: bool) -> None:
+    def record_query(self, sql: str, rows_read: int, rows_returned: int, success: bool) -> None:
         """Record a query in history for the dashboard."""
         import datetime
         entry = {
             "time": datetime.datetime.now().strftime("%H:%M:%S"),
             "sql": sql,
             "rows_read": rows_read,
+            "rows_returned": rows_returned,
             "status": "Success" if success else "Error"
         }
         self.query_history.insert(0, entry)

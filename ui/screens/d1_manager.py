@@ -5,6 +5,12 @@ from textual.screen import Screen
 
 class D1ManagerScreen(Static):
     """Screen for managing D1 databases and running queries."""
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.selected_db_id = None
+        self.table_row_counts = {}
+        self.analysis_timer = None
 
     async def on_mount(self) -> None:
         """Fetch databases when the screen is mounted."""
@@ -66,7 +72,7 @@ class D1ManagerScreen(Static):
             self.app.notify(f"Error fetching schema: {e}", severity="error")
 
     async def select_database(self, db_id: str, db_name: str) -> None:
-        """Fetch tables for the selected database."""
+        """Fetch tables for the selected database and cache row counts."""
         self.selected_db_id = db_id
         self.query_one("#d1-main-content Label").update(f"SQL Sandbox: {db_name}")
         
@@ -77,12 +83,84 @@ class D1ManagerScreen(Static):
             tables = await self.app.client.list_d1_tables(db_id)
             for table in tables:
                 table_list.append(ListItem(Label(table)))
+                
+                # Skip system or internal Cloudflare tables to avoid 400 errors
+                if table.startswith("_cf_") or table.startswith("sqlite_"):
+                    self.table_row_counts[table] = 0
+                    continue
+
+                # Background fetch row counts for estimation (Gracefully handle individual failures)
+                try:
+                    count = await self.app.client.get_table_row_count(db_id, table)
+                    self.table_row_counts[table] = count
+                except Exception:
+                    self.table_row_counts[table] = 1000 # Fallback
+                
         except Exception as e:
-            self.app.notify(f"Error fetching tables: {e}", severity="error")
+            self.app.notify(f"Error fetching tables list: {e}", severity="error")
+
+    async def on_input_changed(self, event: Input.Changed) -> None:
+        """Debounced SQL analysis for cost estimation."""
+        if event.input.id != "sql-input" or not self.selected_db_id:
+            return
+
+        if self.analysis_timer:
+            self.analysis_timer.cancel()
+        
+        import asyncio
+        async def delayed_analysis():
+            await asyncio.sleep(0.5)
+            await self.analyze_query(event.value)
+        
+        self.analysis_timer = asyncio.create_task(delayed_analysis())
+
+    async def analyze_query(self, sql: str) -> None:
+        """Analyze SQL using EXPLAIN and update the estimator widget."""
+        if not sql or len(sql) < 5:
+            self.query_one("#cost-estimator").update("Ready to analyze...")
+            return
+
+        # Skip non-select queries for simple analysis
+        if not sql.strip().upper().startswith("SELECT"):
+            self.query_one("#cost-estimator").update("Cost Estimation only supported for SELECT queries")
+            return
+
+        try:
+            res = await self.app.client.query_d1(self.selected_db_id, f"EXPLAIN QUERY PLAN {sql}")
+            if res.get("success"):
+                plan = res["result"][0].get("results", [])
+                
+                # Analyze plan
+                is_scan = any("SCAN" in str(p).upper() for p in plan)
+                
+                # Double check for SELECT * without WHERE or LIMIT (Guaranteed expensive on large tables)
+                is_unfiltered_select = "SELECT" in sql.upper() and "WHERE" not in sql.upper() and "LIMIT" not in sql.upper()
+                
+                target_table = None
+                # Crude table name extraction
+                import re
+                table_match = re.search(r"FROM\s+([\"\w]+)", sql, re.IGNORECASE)
+                if table_match:
+                    target_table = table_match.group(1).replace('"', '')
+
+                row_count = self.table_row_counts.get(target_table, 1000)
+                
+                estimator = self.query_one("#cost-estimator")
+                if is_scan or is_unfiltered_select:
+                    if row_count > 1000:
+                        estimator.update(f"[b red]🔴 DANGEROUS: Full Scan on {target_table} (~{row_count} Row Reads)[/]")
+                    else:
+                        estimator.update(f"[b yellow]🟡 WARNING: Table Scan on {target_table} (~{row_count} Row Reads)[/]")
+                else:
+                    estimator.update(f"[b green]🟢 SAFE: Query uses indexes. Estimated Row Reads: < 50[/]")
+            else:
+                self.query_one("#cost-estimator").update("[i red]Invalid SQL Syntax[/]")
+        except Exception:
+            pass
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button clicks for Query and Explain."""
-        if not hasattr(self, "selected_db_id"):
+        if not self.selected_db_id:
             self.app.notify("Please select a database first.", severity="warning")
             return
 
@@ -136,11 +214,11 @@ class D1ManagerScreen(Static):
                 else:
                     self.app.notify("✅ Query uses indexes efficiently.", severity="information")
 
-            self.app.record_query(sql, row_reads, True)
+            self.app.record_query(sql, row_reads, len(rows), True)
             self.app.notify(f"Success! Rows Read: {row_reads}", severity="information")
             
         except Exception as e:
-            self.app.record_query(sql, 0, False)
+            self.app.record_query(sql, 0, 0, False)
             self.app.notify(f"Execution Error: {e}", severity="error")
 
     def compose(self) -> ComposeResult:
@@ -155,6 +233,10 @@ class D1ManagerScreen(Static):
             with Vertical(id="d1-main-content"):
                 yield Label("SQL Sandbox", classes="section-title")
                 yield Input(placeholder="SELECT * FROM table LIMIT 10", id="sql-input")
+                
+                # New Cost Estimator Widget
+                yield Static("Ready to analyze...", id="cost-estimator")
+                
                 with Horizontal(id="query-actions"):
                     yield Button("Run Query", variant="primary", id="run-query-btn")
                     yield Button("Explain Plan", variant="default", id="explain-btn")

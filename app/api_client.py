@@ -54,6 +54,13 @@ class CloudflareClient:
             return [row["name"] for row in res["result"][0]["results"]]
         return []
 
+    async def get_table_row_count(self, database_id: str, table_name: str) -> int:
+        """Get approximate row count for a table."""
+        res = await self.query_d1(database_id, f'SELECT COUNT(*) as count FROM "{table_name}"')
+        if res.get("success"):
+            return res["result"][0]["results"][0]["count"]
+        return 0
+
     # --- R2 API ---
     async def list_r2_buckets(self) -> List[Dict[str, Any]]:
         data = await self._get("r2/buckets")
