@@ -50,44 +50,44 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 - A Cloudflare API Token (Permissions: `D1:Edit`, `R2:Edit`, `Account Settings:Read`)
 - Your Cloudflare Account ID
 
-### Installation
+### ⚡ Easiest Way (Interactive Setup)
 
-1. **Clone the repository:**
+The quickest way to get started is using our setup script:
 
-   ```bash
-   git clone https://github.com/Pheem49/CloudDash-TUI-for-Cloudflare.git
-   cd CloudDash-TUI-for-Cloudflare
-   ```
+```bash
+git clone https://github.com/Pheem49/CloudDash-TUI-for-Cloudflare.git
+cd CloudDash-TUI-for-Cloudflare
+bash setup.sh
+```
+The script will automatically create a virtual environment, install dependencies, and help you configure your API keys.
 
-2. **Set up Virtual Environment:**
+After setup, just run:
+```bash
+./clouddash
+```
 
+### Manual Installation
+
+If you prefer to do it yourself:
+
+1. **Set up Virtual Environment:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
    ```
 
-3. **Install Dependencies:**
-
+2. **Install Dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configuration:**
-   Copy the example environment file and fill in your credentials:
+3. **Configuration:**
+   Create a `.env` file based on `.env.example`.
+
+4. **Run:**
    ```bash
-   cp .env.example .env
+   python main.py
    ```
-   Edit `.env`:
-   ```env
-   CLOUDFLARE_API_TOKEN=your_token_here
-   CLOUDFLARE_ACCOUNT_ID=your_account_id_here
-   ```
-
-### Running the App
-
-```bash
-python main.py
-```
 
 ---
 

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clouddash-tui"
+version = "0.1.0"
+description = "A premium Terminal User Interface (TUI) for managing Cloudflare D1 and R2 resources."
+readme = "README.md"
+authors = [
+    { name = "Apisit Promma", email = "pheem49@example.com" }
+]
+license = { text = "MIT" }
+dependencies = [
+    "textual>=0.59.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "rich>=13.7.1"
+]
+requires-python = ">=3.10"
+
+[project.scripts]
+clouddash = "main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*", "ui*"]
+
+[tool.setuptools.py-modules]
+modules = ["main"]

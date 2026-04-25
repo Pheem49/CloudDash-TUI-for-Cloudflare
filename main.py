@@ -1,6 +1,9 @@
 import sys
 from ui.app import CloudDashApp
 
-if __name__ == "__main__":
+def main():
     app = CloudDashApp()
     app.run()
+
+if __name__ == "__main__":
+    main()
