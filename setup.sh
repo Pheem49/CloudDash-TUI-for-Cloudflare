@@ -32,10 +32,11 @@ fi
 
 # 4. Create Launcher Script
 echo -e "${BLUE}[4/4] Creating launcher script...${NC}"
+APP_PATH=$(pwd)
 cat <<EOF > clouddash
 #!/bin/bash
-source "$(pwd)/venv/bin/activate"
-python3 "$(pwd)/main.py"
+source "$APP_PATH/venv/bin/activate"
+python3 "$APP_PATH/main.py"
 EOF
 
 chmod +x clouddash

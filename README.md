@@ -62,9 +62,19 @@ bash setup.sh
 The script will automatically create a virtual environment, install dependencies, and help you configure your API keys.
 #### Linux / macOS
 ```bash
+# Run the setup script
 bash setup.sh
+
+# Start the app
 ./clouddash
 ```
+
+> [!TIP]
+> **Run from anywhere:** To run CloudDash from any directory, add an alias to your `.bashrc` or `.zshrc`:
+> ```bash
+> echo "alias clouddash='$(pwd)/clouddash'" >> ~/.bashrc && source ~/.bashrc
+> ```
+> Now you can just type `clouddash` in any terminal window!
 
 #### Windows
 ```powershell
