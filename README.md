@@ -60,10 +60,16 @@ cd CloudDash-TUI-for-Cloudflare
 bash setup.sh
 ```
 The script will automatically create a virtual environment, install dependencies, and help you configure your API keys.
-
-After setup, just run:
+#### Linux / macOS
 ```bash
+bash setup.sh
 ./clouddash
+```
+
+#### Windows
+```powershell
+.\setup.ps1
+.\clouddash.bat
 ```
 
 ### Manual Installation
