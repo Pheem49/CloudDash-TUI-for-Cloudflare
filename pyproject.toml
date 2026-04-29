@@ -7,17 +7,30 @@ name = "clouddash-tui"
 version = "0.1.0"
 description = "A premium Terminal User Interface (TUI) for managing Cloudflare D1 and R2 resources."
 readme = "README.md"
+requires-python = ">=3.10"
 authors = [
     { name = "Apisit Promma", email = "pheem49@example.com" }
 ]
 license = { text = "MIT" }
-dependencies = [
-    "textual>=0.59.0",
-    "httpx>=0.27.0",
-    "python-dotenv>=1.0.1",
-    "rich>=13.7.1"
+keywords = ["cloudflare", "d1", "r2", "tui", "terminal", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Utilities"
 ]
-requires-python = ">=3.10"
+dependencies = [
+    "textual>=0.59.0,<1.0.0",
+    "httpx>=0.27.0,<1.0.0",
+    "python-dotenv>=1.0.1,<2.0.0",
+    "rich>=13.7.1,<14.0.0"
+]
 
 [project.scripts]
 clouddash = "main:main"

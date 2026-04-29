@@ -1,18 +1,27 @@
 from textual.app import ComposeResult
 from textual.widgets import Static, ListView, ListItem, Label, DirectoryTree
 from textual.containers import Horizontal, Vertical
+from app.logger import log_error, log_info, log_debug
 
 class R2ExplorerScreen(Static):
     """Dual-pane explorer for R2 storage."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.current_cursor = None
+        self.selected_bucket = None
 
     async def on_mount(self) -> None:
         """Fetch R2 buckets when the screen is mounted."""
         self.current_cursor = None
         await self.refresh_buckets()
+        log_info("R2 Explorer screen mounted")
 
     async def refresh_buckets(self) -> None:
         """Fetch and display R2 buckets."""
         if not hasattr(self.app, 'client') or not self.app.client:
+            self.app.notify("Cloudflare Client not initialized", severity="error")
+            log_error("R2: Cloudflare Client not initialized")
             return
 
         bucket_list = self.query_one("#r2-object-list", ListView) # Reusing this for bucket selection initially
@@ -23,8 +32,11 @@ class R2ExplorerScreen(Static):
             for bucket in buckets:
                 bucket_list.append(ListItem(Label(f"📁 {bucket['name']}"), id=f"bucket-{bucket['name']}"))
             self.query_one("#r2-bucket-title").update("R2 Buckets")
+            self.app.notify(f"Loaded {len(buckets)} R2 buckets", severity="information")
+            log_info(f"R2: Loaded {len(buckets)} buckets")
         except Exception as e:
-            self.app.notify(f"Error fetching R2: {e}", severity="error")
+            self.app.notify(f"Error fetching R2 buckets: {e}", severity="error")
+            log_error(f"R2: Error fetching buckets: {e}", exc_info=True)
 
     async def on_list_view_selected(self, event: ListView.Selected) -> None:
         """Handle bucket selection."""
@@ -70,9 +82,12 @@ class R2ExplorerScreen(Static):
             
             if not objects and not cursor:
                 obj_list.append(ListItem(Label("Bucket is empty.")))
+            
+            log_info(f"R2: Listed {len(objects)} objects in bucket {bucket_name}")
                 
         except Exception as e:
-            self.app.notify(f"Error listing objects: {e}", severity="error")
+            self.app.notify(f"Error listing R2 objects: {e}", severity="error")
+            log_error(f"R2: Error listing objects in {bucket_name}: {e}", exc_info=True)
 
     def compose(self) -> ComposeResult:
         with Horizontal():

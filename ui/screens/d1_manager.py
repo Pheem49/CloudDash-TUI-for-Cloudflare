@@ -2,6 +2,7 @@ from textual.app import ComposeResult
 from textual.widgets import Static, ListView, ListItem, Label, Input, Button, DataTable
 from textual.containers import Horizontal, Vertical, Grid
 from textual.screen import Screen
+from app.logger import log_error, log_info, log_debug
 
 class D1ManagerScreen(Static):
     """Screen for managing D1 databases and running queries."""
@@ -9,6 +10,7 @@ class D1ManagerScreen(Static):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.selected_db_id = None
+        self.selected_db_name = None
         self.table_row_counts = {}
         self.analysis_timer = None
 
@@ -74,6 +76,7 @@ class D1ManagerScreen(Static):
     async def select_database(self, db_id: str, db_name: str) -> None:
         """Fetch tables for the selected database and cache row counts."""
         self.selected_db_id = db_id
+        self.selected_db_name = db_name
         self.query_one("#d1-main-content Label").update(f"SQL Sandbox: {db_name}")
         
         table_list = self.query_one("#table-list", ListView)
@@ -95,9 +98,12 @@ class D1ManagerScreen(Static):
                     self.table_row_counts[table] = count
                 except Exception:
                     self.table_row_counts[table] = 1000 # Fallback
+            
+            log_info(f"Selected database: {db_name} with {len(tables)} tables")
                 
         except Exception as e:
             self.app.notify(f"Error fetching tables list: {e}", severity="error")
+            log_error(f"Error fetching tables for {db_name}: {e}")
 
     async def on_input_changed(self, event: Input.Changed) -> None:
         """Debounced SQL analysis for cost estimation."""
@@ -185,6 +191,8 @@ class D1ManagerScreen(Static):
             res = await self.app.client.query_d1(self.selected_db_id, sql)
             if not res.get("success"):
                 self.app.notify(f"Query Error: {res.get('errors')}", severity="error")
+                self.app.record_query(sql, 0, 0, False, self.selected_db_name or "Unknown")
+                log_error(f"D1 Query failed: {res.get('errors')}")
                 return
 
             # D1 query returns a list of results (one per statement)
@@ -214,12 +222,14 @@ class D1ManagerScreen(Static):
                 else:
                     self.app.notify("✅ Query uses indexes efficiently.", severity="information")
 
-            self.app.record_query(sql, row_reads, len(rows), True)
+            self.app.record_query(sql, row_reads, len(rows), True, self.selected_db_name or "Unknown")
             self.app.notify(f"Success! Rows Read: {row_reads}", severity="information")
+            log_info(f"D1 Query executed successfully: {sql[:50]}... ({row_reads} row reads)")
             
         except Exception as e:
-            self.app.record_query(sql, 0, 0, False)
+            self.app.record_query(sql, 0, 0, False, self.selected_db_name or "Unknown")
             self.app.notify(f"Execution Error: {e}", severity="error")
+            log_error(f"D1 Query execution error: {e}", exc_info=True)
 
     def compose(self) -> ComposeResult:
         with Horizontal():

@@ -2,9 +2,20 @@ from textual.app import ComposeResult
 from textual.widgets import Static, DataTable
 from textual.containers import Vertical, Horizontal
 from textual.screen import Screen
+from app.logger import log_info
 
 class DashboardScreen(Static):
     """The main dashboard showing Row-Read Monitor and recent activity."""
+
+    async def on_mount(self) -> None:
+        """Load query history when mounted."""
+        # Load initial history from persistent storage
+        history = self.app.query_history_manager.get_history()
+        if history:
+            self.update_history(history)
+            log_info(f"Dashboard loaded with {len(history)} historical queries")
+        else:
+            log_info("Dashboard initialized with empty history")
 
     def update_history(self, history: list) -> None:
         """Update the history table and stats boxes with new data."""

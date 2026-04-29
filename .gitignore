@@ -154,6 +154,15 @@ cython_debug/
 # VS Code
 .vscode/
 
-# CloudDash Launcher
+# CloudDash specific
+logs/
+.clouddash_query_history.json
 clouddash
 clouddash.bat
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

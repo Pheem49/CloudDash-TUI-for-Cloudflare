@@ -19,7 +19,8 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 
 - **Real-time Tracking:** See exactly how many Row Reads each query consumes.
 - **Cost Awareness:** Visual indicators (Green/Yellow/Red) warn you about expensive queries.
-- **Query History:** Keep track of your recent activities across all databases.
+- **Query History:** Keep track of your recent activities across all databases (persistent across sessions).
+- **Daily Statistics:** View total queries, success/error rates, and average query efficiency.
 
 ### 🗄️ D1 Database Management
 
@@ -27,6 +28,7 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 - **SQL Sandbox:** Write and execute SQL queries with a smooth, responsive data grid.
 - **Smart Explain:** Built-in integration with `EXPLAIN QUERY PLAN` that automatically detects and warns you about **Unindexed Scans**.
 - **Quick Refresh:** Dedicated refresh button to sync your database list instantly.
+- **Cost Estimator:** Real-time query analysis with visual warnings for potentially expensive queries.
 
 ### 📦 R2 Storage Explorer
 
@@ -39,6 +41,8 @@ Inspired by tools like `k9s` and `lazygit`, **CloudDash** focuses on **Performan
 
 - **Status Check:** Real-time verification of your API Token and Account ID.
 - **Masked Security:** Displays loaded credentials securely (masked) to confirm `.env` is working correctly.
+- **Daily Stats:** View today's query statistics including success rate and efficiency metrics.
+- **Connection Verification:** Automatic validation of Cloudflare API connection.
 
 ---
 
@@ -98,7 +102,11 @@ If you prefer to do it yourself:
    ```
 
 3. **Configuration:**
-   Create a `.env` file based on `.env.example`.
+   Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
 
 4. **Run:**
    ```bash
@@ -107,6 +115,84 @@ If you prefer to do it yourself:
 
 ---
 
+## 🎮 Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `d` | Toggle Dark Mode |
+| `q` | Quit Application |
+| `Tab` | Switch between tabs |
+| `Enter` | Select/Open item |
+| `Ctrl+C` | Force quit |
+
+---
+
+## 📋 Troubleshooting
+
+### "Configuration Error: API keys missing in .env"
+
+**Solution:** Create or update your `.env` file with your Cloudflare credentials:
+```bash
+CLOUDFLARE_API_TOKEN=your_api_token_here
+CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+```
+
+Then restart CloudDash.
+
+**How to find your credentials:**
+1. Go to https://dash.cloudflare.com/
+2. API Token: Go to "My Profile" → "API Tokens" → Create a token with D1 and R2 permissions
+3. Account ID: Found in the URL after logging in (look for account/[YOUR_ACCOUNT_ID])
+
+### "Query Error: Invalid SQL Syntax"
+
+**Solution:** Check your SQL syntax. CloudDash uses SQLite for D1, so make sure:
+- Table/column names with special characters are wrapped in double quotes: `"_cf_KV"`
+- SQL statements are properly terminated with semicolons
+- Try the query in the Cloudflare dashboard first to verify syntax
+
+### "UNINDEXED SCAN DETECTED"
+
+**This is expected behavior!** CloudDash warns you about potentially expensive queries. To fix:
+1. Add indexes to your heavily queried columns
+2. Use WHERE clauses or LIMIT to reduce scanned rows
+3. Review your EXPLAIN QUERY PLAN output for optimization hints
+
+### Slow Performance on Large Buckets
+
+**Solution:** CloudDash uses smart pagination for R2:
+- Use the "Load More" button to paginate through large buckets
+- The app loads 100 objects at a time by default
+- This prevents overwhelming the terminal
+
+### Application Won't Start
+
+**Check logs:** CloudDash creates logs in the `logs/` directory:
+```bash
+cat logs/clouddash_$(date +%Y%m%d).log
+```
+
+**Common issues:**
+- Python version < 3.10: Update to Python 3.10 or higher
+- Missing dependencies: Run `pip install -r requirements.txt`
+- Terminal compatibility: Use a terminal that supports 256 colors (most modern terminals do)
+
+---
+
+## 📊 Query History
+
+CloudDash automatically saves your query history to `.clouddash_query_history.json`. This includes:
+- Query SQL
+- Row reads and rows returned
+- Success/error status
+- Timestamp
+- Database name
+
+To clear history:
+1. Go to Settings tab (check if supported in your version)
+2. Or manually delete: `rm .clouddash_query_history.json`
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -114,12 +200,28 @@ If you prefer to do it yourself:
 - **API Client:** [HTTPX](https://www.python-httpx.org/) (Async HTTP)
 - **Environment:** [Python-dotenv](https://github.com/theskumar/python-dotenv)
 - **Styling:** Custom TCSS (Textual CSS)
+- **Logging:** Python built-in logging module
+
+---
+
+## 🔒 Security
+
+- CloudDash **never** sends your credentials anywhere except to Cloudflare's official API
+- Credentials are only read from your local `.env` file
+- API tokens are masked in the Settings tab for security
+- All code is open-source and auditable
 
 ---
 
 ## 📝 License
 
 MIT License.
+
+---
+
+## 🤝 Contributing
+
+Found a bug? Want to contribute? Check out the issues or submit a pull request!
 
 ---
 
